@@ -3,24 +3,6 @@ import numpy as np
 import cv2
 import math
 
-def estimateVelocity(old_depth, new_depth):
-    velocity = new_depth - old_depth
-    return velocity
-
-def eulerExtrapolate(position, velocity, timeDelta):
-    position += velocity * timeDelta
-    return (position)
-
-def getTrajectory(initialPosition, initialVelocity, numTrajPoints):
-    positions = []
-    
-    position = list(initialPosition)
-    velocity = list(initialVelocity)
-    for i in range(numTrajPoints):
-        position, velocity = eulerExtrapolate(position, velocity, 1)
-        positions.append(position[:])
-    return positions
-
 def filter_color(rgb_image, lower_bound_color, upper_bound_color):
     #convert the image into the HSV color space
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
@@ -406,15 +388,8 @@ def main():
                             (0,255,0), # color
                             1, # line width
                             cv2.LINE_AA, #
-                            False) #
-            if n != 0:
-                velocity = estimateVelocity(old_depth, new_depth)
-                depth = getTrajectory(new_depth, velocity, 25)
-                old_depth = new_depth
-            else:
-                old_depth = new_depth
-                n +=1
-                
+                            False) 
+            
             cv2.imshow('Detection', detected_frame)
             cv2.imshow('Detection2', detected_frame2)
             
