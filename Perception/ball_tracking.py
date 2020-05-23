@@ -5,49 +5,6 @@ import numpy as np
 import cv2
 import math
 
-pixelsPerMeter = 980.0
-FPS = 30.0
-
-# Euler's method will proceed by timeStepSize / timeStepPrecision at a time
-timeStepSize = 0.5 / FPS
-timeStepPrecision = 1.0
-
-# Number of Euler's method steps to take
-eulerSteps = 25
-
-# Gravitational acceleration is in units of pixels per second squared
-gSeconds = 9.81 * pixelsPerMeter
-# Per-timestep gravitational acceleration (pixels per timestep squared)
-gTimesteps = gSeconds * (timeStepSize**2)
-
-def distance2D(old_center, new_center):
-    dist = math.sqrt((new_center[0] - old_center[0])**2 + (new_center[1] - old_center[1])**2)
-    return dist
-
-def estimateVelocity(old_center, new_center):
-    velocity = [(new_center[0] - old_center[0]), (new_center[1] - old_center[1])]
-    
-    return velocity
-
-def eulerExtrapolate(position, velocity, acceleration, timeDelta):
-    position[0] += velocity[0] * timeDelta
-    position[1] += velocity[1] * timeDelta
-
-    velocity[0] += acceleration[0] * timeDelta
-    velocity[1] += acceleration[1] * timeDelta
-
-    return (position, velocity)
-
-def getTrajectory(initialPosition, initialVelocity, acceleration, timeDelta, numTrajPoints):
-    positions = []
-    
-    position = list(initialPosition)
-    velocity = list(initialVelocity)
-    for i in range(numTrajPoints):
-        position, velocity = eulerExtrapolate(position, velocity, acceleration, 1)
-        positions.append(position[:])
-    return positions
-
 def filter_color(rgb_image, lower_bound_color, upper_bound_color):
     #convert the image into the HSV color space
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
@@ -143,17 +100,6 @@ def main():
         print (old_center)
         detection, detected_frame, new_center = detect_ball_in_a_frame(frame)
         cv2.imshow('Detection', detected_frame)
-        ball_velocity = estimateVelocity(old_center, new_center)
-        if n != 0:
-            distance = distance2D(old_center, new_center)
-            if distance <= 50:
-                positions = getTrajectory(new_center, ball_velocity, (0, gTimesteps), timeStepSize, eulerSteps)
-                estimated_positions = draw_positions(detected_frame, positions)
-            cv2.imshow('Estimation', estimated_positions)
-            old_center = new_center
-        else:
-            old_center = new_center
-            n += 1
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
