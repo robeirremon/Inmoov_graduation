@@ -15,7 +15,6 @@ def detect():
     rospy.init_node('detect', anonymous=True)
     #rospy.spin()
 
-    old_center = [0,0]
     old_real_values = [0,0,0]
         
     while not rospy.is_shutdown():
@@ -38,10 +37,10 @@ def detect():
 
         old_real_values = real_values
         
-    #     if cv2.waitKey(1) & 0xFF == ord('q'):
-    #         break
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+             break
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 #function to get RGB image from kinect
@@ -154,6 +153,6 @@ def detect_ball_in_a_frame(image_frame):
 if __name__ == '__main__':
     try:
         detect()
-        rospy.spin()
+        
     except rospy.ROSInterruptException:
         pass
