@@ -3,7 +3,7 @@
 import rospy
 from std_msgs.msg import UInt16MultiArray
 
-positions = [[0,0,0],[0,0,0]]
+global positions = [[0,0,0],[0,0,0]]
 
 pixelsPerMeter = 980.0
 FPS = 30.0
@@ -52,7 +52,10 @@ def estimate():
     
     rospy.Subscriber('detection', UInt16MultiArray, callback)
     
-    pub.publish(positions)
+    data_to_send = UInt16MultiArray()  # the data to be sent, initialise the array
+    data_to_send.data = positions # assign the array with the value you want to send
+    
+    pub.publish(data_to_send)
     
     rospy.spin()
 
