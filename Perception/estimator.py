@@ -61,6 +61,7 @@ def estimate():
 
 
 def callback(data):
+    print (data.data)
     velocity = estimateVelocity((data.data[0], data.data[1], data.data[2]), (data.data[3], data.data[4], data.data[5]))
     positions = getTrajectory((data.data[3], data.data[4], data.data[5]), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
     
