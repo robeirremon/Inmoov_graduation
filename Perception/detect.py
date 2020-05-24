@@ -36,7 +36,7 @@ def detect():
         data_to_send.data = all_values # assign the array with the value you want to send
         pub.publish(data_to_send)
 
-        real_values_old = real_values
+        old_real_values = real_values
         
     #     if cv2.waitKey(1) & 0xFF == ord('q'):
     #         break
