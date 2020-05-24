@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+
 import rospy
-from std_msgs.msg import UInt16MutliArray
+from std_msgs.msg import UInt16MultiArray
+
+positions = [[0,0,0],[0,0,0]]
 
 pixelsPerMeter = 980.0
 FPS = 30.0
@@ -42,11 +46,11 @@ def getTrajectory(initialPosition, initialVelocity, acceleration, timeDelta, num
     return positions
 
 def estimate():
-    pub = rospy.Publisher('estimation', UInt16MutliArray, queue_size = 10)
+    pub = rospy.Publisher('estimation', UInt16MultiArray, queue_size = 10)
     
     rospy.init_node('estimate', anonymous = True)
     
-    rospy.Subscribe('detection', UInt16MutliArray, positions= callback)
+    rospy.Subscriber('detection', UInt16MultiArray, callback)
     
     pub.publish(positions)
     
@@ -56,7 +60,7 @@ def estimate():
 def callback(data):
     velocity = estimateVelocity((data.data[0], data.data[1], data.data[2]), (data.data[3], data.data[4], data.data[5]))
     positions = getTrajectory((data.data[3], data.data[4], data.data[5]), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
-    return positions
+    
 
 if __name__ == '__main__':
     estimate()
