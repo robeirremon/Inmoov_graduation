@@ -52,14 +52,16 @@ def estimate():
 
 
 def callback(data):
-    pub = rospy.Publisher('estimation', UInt16MultiArray, queue_size = 10)
-    print (data.data)
-    velocity = estimateVelocity((data.data[0], data.data[1], data.data[2]), (data.data[3], data.data[4], data.data[5]))
-    positions = getTrajectory((data.data[3], data.data[4], data.data[5]), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
-    data_to_send = UInt16MultiArray()  # the data to be sent, initialise the array
-    data_to_send.data = positions# assign the array with the value you want to send
+#    pub = rospy.Publisher('estimation', UInt16MultiArray, queue_size = 10)
+#    print (data.data)
+#    velocity = estimateVelocity((data.data[0], data.data[1], data.data[2]), (data.data[3], data.data[4], data.data[5]))
+#    positions = getTrajectory((data.data[3], data.data[4], data.data[5]), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
+#    data_to_send = UInt16MultiArray()  # the data to be sent, initialise the array
+#    data_to_send.data = positions# assign the array with the value you want to send
     
-    pub.publish(data_to_send)
+#    pub.publish(data_to_send)
+    
+    rospy.loginfo(data.data)
     
 
 if __name__ == '__main__':
