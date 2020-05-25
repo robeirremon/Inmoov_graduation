@@ -31,7 +31,7 @@ def detect():
         rospy.loginfo(all_values)
         #pub.publish(all_values)
     
-        data_to_send = Pos()  # the data to be sent, initialise the array
+        data_to_send = Pose()  # the data to be sent, initialise the array
         data_to_send.Point.x = all_values[0]
         data_to_send.Point.y = all_values[1]
         data_to_send.Point.z = all_values[2]
