@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import Int16MultiArray
+from std_msgs.msg import Float32MultiArray
 
 pixelsPerMeter = 980.0
 FPS = 30.0
@@ -46,18 +46,18 @@ def getTrajectory(initialPosition, initialVelocity, acceleration, timeDelta, num
 def estimate():
     rospy.init_node('estimate', anonymous = True)
     
-    rospy.Subscriber('detection', Int16MultiArray, callback)
+    rospy.Subscriber('detection', Float32MultiArray, callback)
     
     rospy.spin()
 
 
 def callback(data):
-    pub = rospy.Publisher('estimation', Int16MultiArray, queue_size = 10)
+    pub = rospy.Publisher('estimation', Float32MultiArray, queue_size = 10)
 
     velocity = estimateVelocity((data.data[0], data.data[1], data.data[2]), (data.data[3], data.data[4], data.data[5]))
     positions = getTrajectory((data.data[3], data.data[4], data.data[5]), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
 
-    data_to_send = Int16MultiArray()  # the data to be sent, initialise the array
+    data_to_send = Float32MultiArray()  # the data to be sent, initialise the array
     data_to_send.data = positions# assign the array with the value you want to send    
     pub.publish(data_to_send)
     
