@@ -1,0 +1,10 @@
+
+git clone https://github.com/RamiWafik/Inmoov_graduation.git
+
+
+git pull https://github.com/RamiWafik/Inmoov_graduation.git
+
+
+git add *
+git commit -m 
+git push origin master

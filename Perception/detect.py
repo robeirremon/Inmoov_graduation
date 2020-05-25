@@ -7,14 +7,14 @@ import math
 import freenect 
 import math
 import rospy
-from std_msgs.msg import UInt16MutliArray
+from std_msgs.msg import UInt16MultiArray
 #import frame_convert2
 
 def detect():
-    pub = rospy.Publisher('detection', UInt16MutliArray, queue_size=10)
+    pub = rospy.Publisher('detection', UInt16MultiArray, queue_size=10)
     rospy.init_node('detect', anonymous=True)
-    rospy.spin()
-    
+    #rospy.spin()
+
     old_center = [0,0]
     old_real_values = [0,0,0]
         
@@ -28,15 +28,16 @@ def detect():
         real_values = get_depth(y,x)
         
         all_values = old_real_values ,real_values
-        
+
+        rospy.loginfo(all_values)
         pub.publish(all_values)
         
         real_values_old = real_values
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         break
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 
 #function to get RGB image from kinect
@@ -143,5 +144,12 @@ def detect_ball_in_a_frame(image_frame):
     return detection, rgb_image, center
 
     
+#if __name__ == '__main__':
+#    detect()
+
 if __name__ == '__main__':
-    detect()
+    try:
+        detect()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
