@@ -7,7 +7,7 @@ import math
 import freenect 
 import math
 import rospy
-from geormetry_msgs.msg import Pos
+from geometry_msgs.msg import Pos
 #import frame_convert2
 
 def detect():
