@@ -8,12 +8,10 @@ import freenect
 import math
 import rospy
 from geometry_msgs.msg import Pose
-#import frame_convert2
 
 def detect():
     pub = rospy.Publisher('detection', Pose, queue_size=10)
     rospy.init_node('detect', anonymous=True)
-    #rospy.spin()
 
     old_real_values = [0.0,0.0,0.0]
         
@@ -25,12 +23,10 @@ def detect():
         x=new_center[0]
         y=new_center[1]
         real_values = get_depth(y,x)
-        
         all_values = old_real_values ,real_values
 
         rospy.loginfo(all_values)
-        #pub.publish(all_values)
-    
+        
         data_to_send = Pose()  # the data to be sent, initialise the array
         data_to_send.position.x = all_values[0][0]
         data_to_send.position.y = all_values[0][1]
@@ -150,10 +146,6 @@ def detect_ball_in_a_frame(image_frame):
     area_max = findLargest(contours)
     detection, rgb_image, center = draw_ball_contour(binary_image_mask, rgb_image,contours, area_max)
     return detection, rgb_image, center
-
-    
-#if __name__ == '__main__':
-#    detect()
 
 if __name__ == '__main__':
     try:
