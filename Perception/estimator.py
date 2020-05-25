@@ -3,6 +3,10 @@
 import rospy
 from geometry_msgs.msg import Pose
 
+x = [0,5]
+y = [0,5]
+z = [0,5]
+
 pixelsPerMeter = 980.0
 FPS = 30.0
 
@@ -56,13 +60,12 @@ def callback(data):
 
     velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
     positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
-
     data_to_send = Pose()  # the data to be sent, initialise the array
-    data_to_send.data = positions# assign the array with the value you want to send    
-    pub.publish(data_to_send)
     
-    rospy.loginfo(data.data)
-    
+    for i in positions:
+        if (i[0] > x[0] & i[0] < x[1] & i[1] > y[0] & i[1] < y[1] & i[2] > z[0] & i[2] < z[1]):
+            data_to_send.position = positions[i]    
+            pub.publish(data_to_send)   
 
 if __name__ == '__main__':
     estimate()
