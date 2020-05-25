@@ -7,11 +7,11 @@ import math
 import freenect 
 import math
 import rospy
-from std_msgs.msg import UInt16MultiArray
+from std_msgs.msg import Int16MultiArray
 #import frame_convert2
 
 def detect():
-    pub = rospy.Publisher('detection', UInt16MultiArray, queue_size=10)
+    pub = rospy.Publisher('detection', Int16MultiArray, queue_size=10)
     rospy.init_node('detect', anonymous=True)
     #rospy.spin()
 
@@ -31,7 +31,7 @@ def detect():
         rospy.loginfo(all_values)
         #pub.publish(all_values)
     
-        data_to_send = UInt16MultiArray()  # the data to be sent, initialise the array
+        data_to_send = Int16MultiArray()  # the data to be sent, initialise the array
         data_to_send.data = all_values # assign the array with the value you want to send
         pub.publish(data_to_send)
 
