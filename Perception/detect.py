@@ -32,12 +32,12 @@ def detect():
         #pub.publish(all_values)
     
         data_to_send = Pose()  # the data to be sent, initialise the array
-        data_to_send.Point.x = all_values[0]
-        data_to_send.Point.y = all_values[1]
-        data_to_send.Point.z = all_values[2]
-        data_to_send.Quaternion.x = all_values[3]
-        data_to_send.Quaternion.y = all_values[4]
-        data_to_send.Quaternion.z = all_values[5]
+        data_to_send.position.x = all_values[0][0]
+        data_to_send.position.y = all_values[0][1]
+        data_to_send.position.z = all_values[0][2]
+        data_to_send.orientation.x = all_values[1][0]
+        data_to_send.orientation.y = all_values[1][1]
+        data_to_send.orientation.z = all_values[1][2]
         pub.publish(data_to_send)
 
         old_real_values = real_values
