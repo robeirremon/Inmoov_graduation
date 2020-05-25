@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from geometry_msgs.msg import Pos
+from geometry_msgs.msg import Pose
 
 pixelsPerMeter = 980.0
 FPS = 30.0
