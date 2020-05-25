@@ -15,7 +15,7 @@ def detect():
     rospy.init_node('detect', anonymous=True)
     #rospy.spin()
 
-    old_real_values = [0,0,0]
+    old_real_values = [0.0,0.0,0.0]
         
     while not rospy.is_shutdown():
         frame = get_video()
