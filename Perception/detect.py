@@ -32,6 +32,7 @@ def detect():
         #pub.publish(all_values)
     
         data_to_send = Float32MultiArray()  # the data to be sent, initialise the array
+        data_to_send.layout.data_offset = 0.0
         data_to_send.data = all_values # assign the array with the value you want to send
         pub.publish(data_to_send)
 
