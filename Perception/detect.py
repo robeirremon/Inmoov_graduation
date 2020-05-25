@@ -11,7 +11,7 @@ from geometry_msgs.msg import Pose
 #import frame_convert2
 
 def detect():
-    pub = rospy.Publisher('detection', Pos, queue_size=10)
+    pub = rospy.Publisher('detection', Pose, queue_size=10)
     rospy.init_node('detect', anonymous=True)
     #rospy.spin()
 

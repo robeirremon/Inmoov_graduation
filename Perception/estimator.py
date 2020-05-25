@@ -46,18 +46,18 @@ def getTrajectory(initialPosition, initialVelocity, acceleration, timeDelta, num
 def estimate():
     rospy.init_node('estimate', anonymous = True)
     
-    rospy.Subscriber('detection', Pos, callback)
+    rospy.Subscriber('detection', Pose, callback)
     
     rospy.spin()
 
 
 def callback(data):
-    pub = rospy.Publisher('estimation', Pos, queue_size = 10)
+    pub = rospy.Publisher('estimation', Pose, queue_size = 10)
 
     velocity = estimateVelocity((data.Point.x, data.Point.y, data.Point.z), (data.Quaternion.x, data.Quaternion.y, data.Quaternion.z))
     positions = getTrajectory((data.Quaternion.x, data.Quaternion.y, data.Quaternion.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
 
-    data_to_send = Pos()  # the data to be sent, initialise the array
+    data_to_send = Pose()  # the data to be sent, initialise the array
     data_to_send.data = positions# assign the array with the value you want to send    
     pub.publish(data_to_send)
     
