@@ -64,9 +64,11 @@ def get_depth(y,x):
     minDistance = -10
     scaleFactor = .0021
     z = distance_meter * 100
-    x = (x - w / 2) * (z + minDistance) * scaleFactor
-    y = (y - h / 2) * (z + minDistance) * scaleFactor
-    real_values = [x,y,z]
+    #x = (x - w / 2) * (z + minDistance) * scaleFactor
+    #y = (y - h / 2) * (z + minDistance) * scaleFactor
+    x = (2 * sin(22.5 * 3.14 / 180) / z) * ((x - w/2) / 640)
+    y = (2 * sin(29 * 3.14 / 180) / z) * ((y - h/2) / 480)
+    real_values = [x,z,y]
     return real_values
      
 
