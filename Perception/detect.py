@@ -32,9 +32,9 @@ def detect():
         #pub.publish(all_values)
     
         data_to_send = Float32MultiArray()  # the data to be sent, initialise the array
-        data_to_send.layout.dim = [2][3]
         data_to_send.data = all_values # assign the array with the value you want to send
-        pub.publish(data_to_send)
+        #pub.publish(data_to_send)
+        print (type(all_values))
 
         old_real_values = real_values
         
