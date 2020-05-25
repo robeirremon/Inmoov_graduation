@@ -54,8 +54,8 @@ def estimate():
 def callback(data):
     pub = rospy.Publisher('estimation', Pose, queue_size = 10)
 
-    velocity = estimateVelocity((data.Point.x, data.Point.y, data.Point.z), (data.Quaternion.x, data.Quaternion.y, data.Quaternion.z))
-    positions = getTrajectory((data.Quaternion.x, data.Quaternion.y, data.Quaternion.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
+    velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
+    positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
 
     data_to_send = Pose()  # the data to be sent, initialise the array
     data_to_send.data = positions# assign the array with the value you want to send    
