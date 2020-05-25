@@ -7,11 +7,11 @@ import math
 import freenect 
 import math
 import rospy
-from std_msgs.msg import Float32MultiArray
+from geormetry_msgs.msg import Pos
 #import frame_convert2
 
 def detect():
-    pub = rospy.Publisher('detection', Float32MultiArray, queue_size=10)
+    pub = rospy.Publisher('detection', Pos, queue_size=10)
     rospy.init_node('detect', anonymous=True)
     #rospy.spin()
 
@@ -31,10 +31,14 @@ def detect():
         rospy.loginfo(all_values)
         #pub.publish(all_values)
     
-        data_to_send = Float32MultiArray()  # the data to be sent, initialise the array
-        data_to_send.data = all_values # assign the array with the value you want to send
-        #pub.publish(data_to_send)
-        print (type(all_values))
+        data_to_send = Pos()  # the data to be sent, initialise the array
+        data_to_send.Point.x = all_values[0]
+        data_to_send.Point.y = all_values[1]
+        data_to_send.Point.z = all_values[2]
+        data_to_send.Quaternion.x = all_values[3]
+        data_to_send.Quaternion.y = all_values[4]
+        data_to_send.Quaternion.z = all_values[5]
+        pub.publish(data_to_send)
 
         old_real_values = real_values
         
