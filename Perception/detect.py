@@ -66,9 +66,9 @@ def get_depth(y,x):
     z = distance_meter * 100
     #x = (x - w / 2) * (z + minDistance) * scaleFactor
     #y = (y - h / 2) * (z + minDistance) * scaleFactor
-    x = (2 * sin(22.5 * 3.14 / 180) / z) * ((x - w/2) / 640)
-    y = (2 * sin(29 * 3.14 / 180) / z) * ((y - h/2) / 480)
-    real_values = [x,z,y]
+    x = (2 * math.tan(22.5 * 3.14 / 180) * z) * ((x - w/2) / 640)
+    y = (2 * math.tan(29 * 3.14 / 180) * z) * ((y - h/2) / 480)
+    real_values = [z,x,-y]
     return real_values
      
 
