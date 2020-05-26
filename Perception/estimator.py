@@ -58,6 +58,7 @@ def estimate():
 
 def callback(data):
     pub = rospy.Publisher('estimation', Pose, queue_size = 10)
+    print(data)
     
     data.position.x += 4.03
     data.position.y += 0.3
