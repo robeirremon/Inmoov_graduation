@@ -1,0 +1,80 @@
+function sysCall_init()
+
+targetHandle=sim.getObjectAssociatedWithScript(sim.handle_self) --Handle of the target dummy
+Joint1Handle=sim.getObjectHandle('l_elbow_flex_joint')
+Joint2Handle=sim.getObjectHandle('l_wrist_roll_joint')
+Joint3Handle=sim.getObjectHandle('l_bicepcover_joint')
+Joint4Handle=sim.getObjectHandle('l_upper_arm_roll_joint')
+Joint5Handle=sim.getObjectHandle('l_shoulder_lift_joint')
+
+-- Launch the ROS client application:
+    if simROS then
+print("<font color='#0F0'>ROS interface was found.</font>@html")
+
+-- Prepare dummy target subscriber:
+targetSub=simROS.subscribe('/IK_point','geometry_msgs/Point','setTargetPosition')
+joint1publisher=simROS.advertise('/leftElbowAngle','std_msgs/Float32')
+joint2publisher=simROS.advertise('/leftWristbowAngle','std_msgs/Float32')
+joint3publisher=simROS.advertise('/leftBicepCoverAngle','std_msgs/Float32')
+joint4publisher=simROS.advertise('/leftUpperArmRollAngle','std_msgs/Float32')
+joint5publisher=simROS.advertise('/leftShoulderLiftAngle','std_msgs/Float32')
+
+ else
+        print("<font color='#F00'>ROS interface was not found. Cannot run.</font>@html")
+    end
+    
+end
+
+function setTargetPosition(msg)
+-- Target subscriber callback
+  position={msg.x,msg.y,msg.z}
+  result=sim.setObjectPosition(targetHandle,-1,position)
+end
+
+function sysCall_actuation()
+
+end
+
+
+function sysCall_sensing()
+
+Joint1Pos=sim.getJointPosition(Joint1Handle)
+local tab1 = {}
+tab1['AngleInRad'] = Joint1Pos
+
+Joint2Pos=sim.getJointPosition(Joint2Handle)
+local tab2 = {}
+tab2['AngleInRad'] = Joint2Pos
+
+Joint3Pos=sim.getJointPosition(Joint3Handle)
+local tab3 = {}
+tab3['AngleInRad'] = Joint3Pos
+
+Joint4Pos=sim.getJointPosition(Joint4Handle)
+local tab4 = {}
+tab4['AngleInRad'] = Joint4Pos
+
+Joint5Pos=sim.getJointPosition(Joint5Handle)
+local tab5 = {}
+tab5['AngleInRad'] = Joint5Pos
+
+
+simROS.publish(joint1publisher,tab1)
+simROS.publish(joint2publisher,tab2)
+simROS.publish(joint3publisher,tab3)
+simROS.publish(joint4publisher,tab4)
+simROS.publish(joint5publisher,tab5)
+
+end
+
+function sysCall_cleanup()
+  if simROS then
+       simROS.shutdownSubscriber(targetSub)
+       simROS.shutdownPublisher(joint1publisher)
+       simROS.shutdownPublisher(joint2publisher)
+       simROS.shutdownPublisher(joint3publisher)
+       simROS.shutdownPublisher(joint4publisher)
+       simROS.shutdownPublisher(joint5publisher)
+
+  end
+end

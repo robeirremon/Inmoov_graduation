@@ -1,0 +1,28 @@
+function sysCall_init()
+targetHandle=sim.getObjectAssociatedWithScript(sim.handle_self) --Handle of the target dummy
+
+-- Launch the ROS client application:
+    if simROS then
+print("<font color='#0F0'>ROS interface was found.</font>@html")
+
+-- Prepare dummy target subscriber:
+targetSub=simROS.subscribe('/IK_point','geometry_msgs/Point','setTargetPosition')
+
+ else
+        print("<font color='#F00'>ROS interface was not found. Cannot run.</font>@html")
+    end
+    
+end
+
+function setTargetPosition(msg)
+-- Target subscriber callback
+  position={msg.x,msg.y,msg.z}
+  result=sim.setObjectPosition(targetHandle,-1,position)
+end
+
+
+function sysCall_cleanup()
+  if simROS then
+       simROS.shutdownSubscriber(targetSub)
+  end
+end
