@@ -64,6 +64,9 @@ def callback(data):
     
     for i in positions:
         if (i[0] > x[0] & i[0] < x[1] & i[1] > y[0] & i[1] < y[1] & i[2] > z[0] & i[2] < z[1]):
+            i[0] -= 4.03
+            i[1] -= 0.3
+            i[2] -= 138.53
             data_to_send.position = positions[i]    
             pub.publish(data_to_send)   
 
