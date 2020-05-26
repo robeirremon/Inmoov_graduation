@@ -2,6 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Point
 
 x = [ 15.0  , 45.0  ]
 y = [ 5.0   , 35.0  ]
@@ -67,12 +68,13 @@ def callback(data):
 
     velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
     positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
-    data_to_send = Pose()  # the data to be sent, initialise the array
+    data_to_send = Point()  # the data to be sent, initialise the array
     
     for i in positions:
         if ((i[0] > x[0]) and (i[0] < x[1]) and (i[1] > y[0]) and (i[1] < y[1]) and (i[2] > z[0]) and (i[2] < z[1])):
-            data_to_send.position = positions[i]    
-            pub.publish(data_to_send)   
+            data_to_send = positions[i] 
+            pub.publish(data_to_send)
+            print(data_to_send)
 
 if __name__ == '__main__':
     estimate()
