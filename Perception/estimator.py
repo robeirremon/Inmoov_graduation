@@ -58,12 +58,12 @@ def estimate():
 def callback(data):
     pub = rospy.Publisher('estimation', Pose, queue_size = 10)
     
-    data.position.x -= 4.03
-    data.position.y -= 0.3
-    data.positiom.z -= 138.53
-    data.orientation.x -= 4.03
-    data.orientation.y -= 0.3
-    data.orientation.z -= 138.53
+    data.position.x += 4.03
+    data.position.y += 0.3
+    data.position.z += 138.53
+    data.orientation.x += 4.03
+    data.orientation.y += 0.3
+    data.orientation.z += 138.53
 
     velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
     positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
