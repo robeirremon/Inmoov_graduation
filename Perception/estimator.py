@@ -3,9 +3,9 @@
 import rospy
 from geometry_msgs.msg import Pose
 
-x = [15,45]
-y = [5,35]
-z = [105,135]
+x = [ 15.0  , 45.0  ]
+y = [ 5.0   , 35.0  ]
+z = [ 105.0 , 135.0 ]
 
 pixelsPerMeter = 980.0
 FPS = 30.0
@@ -62,11 +62,12 @@ def callback(data):
     positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
     data_to_send = Pose()  # the data to be sent, initialise the array
     
+    i[0] -= 4.03
+    i[1] -= 0.3
+    i[2] -= 138.53
+    
     for i in positions:
-        if (i[0] > x[0] & i[0] < x[1] & i[1] > y[0] & i[1] < y[1] & i[2] > z[0] & i[2] < z[1]):
-            i[0] -= 4.03
-            i[1] -= 0.3
-            i[2] -= 138.53
+        if ((i[0] > x[0]) & (i[0] < x[1]) & (i[1] > y[0]) & (i[1] < y[1]) & (i[2] > z[0]) & (i[2] < z[1])):
             data_to_send.position = positions[i]    
             pub.publish(data_to_send)   
 
