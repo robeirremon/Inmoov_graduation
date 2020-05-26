@@ -3,9 +3,9 @@
 import rospy
 from geometry_msgs.msg import Pose
 
-x = [0,5]
-y = [0,5]
-z = [0,5]
+x = [15,45]
+y = [5,35]
+z = [105,135]
 
 pixelsPerMeter = 980.0
 FPS = 30.0
