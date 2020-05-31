@@ -73,7 +73,9 @@ def callback(data):
     
     for i in positions:
         if ((i[0] > x[0]) and (i[0] < x[1]) and (i[1] > y[0]) and (i[1] < y[1]) and (i[2] > z[0]) and (i[2] < z[1])):
-            data_to_send = positions[i] 
+            data_to_send.x = positions[i][0]
+            data_to_send.y = positions[i][1]
+            data_to_send.z = positions[i][2]
             pub.publish(data_to_send)
             print(data_to_send)
 
