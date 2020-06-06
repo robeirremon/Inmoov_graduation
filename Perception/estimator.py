@@ -4,9 +4,9 @@ import rospy
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Point
 
-x = [ 15.0  , 45.0  ]
-y = [ 5.0   , 35.0  ]
-z = [ 105.0 , 135.0 ]
+x = [ 10.0  , 40.0  ]
+y = [ 15.0   , 45.0  ]
+z = [ 85.0 , 115.0 ]
 
 pixelsPerMeter = 980.0
 FPS = 30.0
@@ -58,24 +58,24 @@ def estimate():
 
 def callback(data):
     pub = rospy.Publisher('estimation', Point, queue_size = 10)
-    print(data)
+    #print(data)
     
-    data.position.x += 4.03
-    data.position.y += 0.3
-    data.position.z += 138.53
-    data.orientation.x += 4.03
-    data.orientation.y += 0.3
-    data.orientation.z += 138.53
-
+    data.position.x += 10
+    data.position.y += 0
+    data.position.z += 115
+    data.orientation.x += 10
+    data.orientation.y += 0
+    data.orientation.z += 115
+#4.03 , 0.3 , 138.53
     velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
     positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
     data_to_send = Point()  # the data to be sent, initialise the array
     
     for i in positions:
         if ((i[0] > x[0]) and (i[0] < x[1]) and (i[1] > y[0]) and (i[1] < y[1]) and (i[2] > z[0]) and (i[2] < z[1])):
-            data_to_send.x = i[0]
-            data_to_send.y = i[1]
-            data_to_send.z = i[2]
+            data_to_send.x = i[0]/100
+            data_to_send.y = i[1]/100
+            data_to_send.z = i[2]/100 + 0.23
             pub.publish(data_to_send)
             print(data_to_send)
 

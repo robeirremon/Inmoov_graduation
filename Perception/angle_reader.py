@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 from numpy import interp
 from std_msgs.msg import Float32
@@ -5,7 +7,7 @@ from std_msgs.msg import Float32
 
 
 
-def Omoplate_mapping(float value):
+def Omoplate_mapping( value):
 	# name of publisher, and topic and type of msg 
 	pubomoplate = rospy.publisher('lOmoplateAng',Float32,queue_size=10)
 	
@@ -15,7 +17,7 @@ def Omoplate_mapping(float value):
 		pubomoplate.publish(angle_omoplate)
         	rate.sleep()
 
-def Shoulder_mapping(float value):
+def Shoulder_mapping( value):
 	pubshoulder = rospy.publisher('lShoulderAng',Float32,queue_size=10)
 
 	#loop
@@ -26,7 +28,7 @@ def Shoulder_mapping(float value):
 
 
 
-def Rotate_mapping(float value):
+def Rotate_mapping( value):
 	pubrotate = rospy.publisher('lRotateAng',Float32,queue_size=10)
 
 	#loop
@@ -36,7 +38,7 @@ def Rotate_mapping(float value):
         	rate.sleep()
 
 
-def Bicebs_mapping(float value):
+def Bicebs_mapping( value):
 	pubbicebs = rospy.publisher('lBicebsAng',Float32,queue_size=10)
 
 	#loop
@@ -46,7 +48,7 @@ def Bicebs_mapping(float value):
         	rate.sleep()
 
 
-def Wrist_mapping(float value):
+def Wrist_mapping( value):
 	pubwrist = rospy.publisher('WristAng',Float32,queue_size=10)
 	
 	#loop
@@ -56,7 +58,7 @@ def Wrist_mapping(float value):
         	rate.sleep()
 
 
-def angle_reader()
+def angle_reader():
 	#intialization
 	rospy.init_node('angle_reader', anonymous = True )
 

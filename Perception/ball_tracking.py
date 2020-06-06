@@ -35,6 +35,7 @@ def draw_ball_contour(binary_image, rgb_image, contours, area_max):
     black_image = np.zeros([binary_image.shape[0], binary_image.shape[1],3],'uint8')
     tolerance = 50
     center = [0,0]
+    detection = False
     for c in contours:
         cx, cy = get_contour_center(c)
         area = cv2.contourArea(c)
