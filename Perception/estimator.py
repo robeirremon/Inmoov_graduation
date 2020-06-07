@@ -16,7 +16,7 @@ timeStepSize = 0.5 / FPS
 timeStepPrecision = 1.0
 
 # Number of Euler's method steps to take
-eulerSteps = 15
+eulerSteps = 25
 
 # Gravitational acceleration is in units of pixels per second squared
 gSeconds = 9.81 * pixelsPerMeter
@@ -24,7 +24,7 @@ gSeconds = 9.81 * pixelsPerMeter
 gTimesteps = gSeconds * (timeStepSize**2)
 
 def estimateVelocity(old_pos, new_pos):
-    velocity = [(new_pos[0] - old_pos[0]), (new_pos[1] - old_pos[1]), (old_pos[2] - old_pos[2])]
+    velocity = [(new_pos[0] - old_pos[0]), (new_pos[1] - old_pos[1]), (new_pos[2] - old_pos[2])]
     return velocity
 
 def eulerExtrapolate(position, velocity, acceleration, timeDelta):
