@@ -4,6 +4,7 @@ from __future__ import division
 import numpy as np
 import cv2
 import math
+import time
 import freenect 
 import math
 import rospy
@@ -13,12 +14,14 @@ def detect():
     pub = rospy.Publisher('detection', Pose, queue_size=10)
     rospy.init_node('detect', anonymous=True)
     old_real_values = [0.0,0.0,0.0]
+    start_time = 0
+    end_time = 0
     while not rospy.is_shutdown():
         frame = get_video()
         detection = False
-        detection, detected_frame, new_center = detect_ball_in_a_frame(frame)
+        detection, detected_frame, new_center, end_time = detect_ball_in_a_frame(frame)
+        elapsed_time = end_time - start_time
         cv2.imshow('Detection', detected_frame)
-
         x=new_center[0]
         y=new_center[1]
         real_values = get_depth(y,x)
@@ -32,10 +35,12 @@ def detect():
             data_to_send.orientation.x = all_values[1][0]
             data_to_send.orientation.y = all_values[1][1]
             data_to_send.orientation.z = all_values[1][2]
+            data_to_send.orientation.w = elapsed_time
             pub.publish(data_to_send)
-            print(all_values)
+            print(data_to_send)
 
             old_real_values = real_values
+            start_time = end_time
         else:
             print("no contours detected")
 
@@ -90,15 +95,16 @@ def getContours(binary_image):
     #_, contours, hierarchy = cv2.findContours(binary_image, 
     #                                          cv2.RETR_TREE, 
     #                                           cv2.CHAIN_APPROX_SIMPLE)
-    contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    sec = time.time()
     
-    return contours
+    return contours, sec
 
 def findLargest(contours):
     area_max = 0
     for c in contours:
         area = cv2.contourArea(c)
-        if (area_max < area and area > 100):
+        if (area_max < area and area > 50):
             area_max = area
     return area_max
 
@@ -142,16 +148,16 @@ def get_contour_center(contour):
     return cx, cy
 
 def detect_ball_in_a_frame(image_frame):
-    #yellowLower =(25, 50, 50)
-    yellowLower =(50, 50, 50)
-    #yellowUpper = (60, 255, 255)
-    yellowUpper = (100, 255, 100)
+    yellowLower =(25, 50, 50)
+    #yellowLower =(50, 50, 50)
+    yellowUpper = (60, 255, 255)
+    #yellowUpper = (100, 255, 100)
     rgb_image = image_frame
     binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper)
-    contours = getContours(binary_image_mask)
+    contours, sec = getContours(binary_image_mask)
     area_max = findLargest(contours)
     detection, rgb_image, center = draw_ball_contour(binary_image_mask, rgb_image,contours, area_max)
-    return detection, rgb_image, center
+    return detection, rgb_image, center, sec
 
 if __name__ == '__main__':
     try:

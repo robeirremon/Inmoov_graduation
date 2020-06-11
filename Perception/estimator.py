@@ -23,8 +23,8 @@ gSeconds = 9.81 * pixelsPerMeter
 # Per-timestep gravitational acceleration (pixels per timestep squared)
 gTimesteps = gSeconds * (timeStepSize**2)
 
-def estimateVelocity(old_pos, new_pos):
-    velocity = [(new_pos[0] - old_pos[0]), (new_pos[1] - old_pos[1]), (new_pos[2] - old_pos[2])]
+def estimateVelocity(old_pos, new_pos, t):
+    velocity = [(new_pos[0] - old_pos[0]) / t, (new_pos[1] - old_pos[1]) / t, (new_pos[2] - old_pos[2]) / t]
     return velocity
 
 def eulerExtrapolate(position, velocity, acceleration, timeDelta):
@@ -44,7 +44,7 @@ def getTrajectory(initialPosition, initialVelocity, acceleration, timeDelta, num
     position = list(initialPosition)
     velocity = list(initialVelocity)
     for i in range(numTrajPoints):
-        position, velocity = eulerExtrapolate(position, velocity, acceleration, 1)
+        position, velocity = eulerExtrapolate(position, velocity, acceleration, timeDelta)
         positions.append(position[:])
     return positions
 
@@ -67,9 +67,10 @@ def callback(data):
     data.orientation.y += 0
     data.orientation.z += 115
 #4.03 , 0.3 , 138.53
-    velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
-    positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, gTimesteps, 0), timeStepSize, eulerSteps)
+    velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z), data.orientation.w)
+    positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, 0, -980), data.orientation.w, eulerSteps)
     data_to_send = Point()  # the data to be sent, initialise the array
+    #print (positions)
     
     for i in positions:
         if ((i[0] > x[0]) and (i[0] < x[1]) and (i[1] > y[0]) and (i[1] < y[1]) and (i[2] > z[0]) and (i[2] < z[1])):
