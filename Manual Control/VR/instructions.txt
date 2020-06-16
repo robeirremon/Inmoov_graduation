@@ -1,0 +1,3 @@
+To Download Synthiasm ARC on Windows & Android : https://synthiam.com/Products/ARC
+
+For using Arduino as a Hardware EZ-B : https://synthiam.com/Community/Tutorials/Connecting-Arduino-to-EZ-Builder-17526/2
