@@ -74,8 +74,8 @@ def get_contour_center(contour):
     return cx, cy
 
 def detect_ball_in_a_frame(image_frame):
-    yellowLower =(25, 50, 50)
-    yellowUpper = (60, 255, 255)
+    yellowLower =(20, 89, 83)
+    yellowUpper = (81, 212, 255)
     rgb_image = image_frame
     binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper)
     contours = getContours(binary_image_mask)
