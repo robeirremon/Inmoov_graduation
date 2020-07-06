@@ -6,7 +6,6 @@ import cv2
 import math
 import time
 import freenect 
-import math
 import rospy
 from geometry_msgs.msg import Pose
 
@@ -66,12 +65,12 @@ def get_depth(y,x):
     #array = array.astype(np.uint8)
 
     depth_value = array[y,x]
-    distance_cm = 100/(-0.00307 * depth_value + 3.33)
+    #distance_cm = 100/(-0.00307 * depth_value + 3.33)
     distance_meter = 0.1236 * math.tan((depth_value / 2842.5) + 1.1863)         
     w = 640
     h = 480
-    minDistance = -10
-    scaleFactor = .0021
+    #minDistance = -10
+    #scaleFactor = .0021
     z = distance_meter * 100
     #x = (x - w / 2) * (z + minDistance) * scaleFactor
     #y = (y - h / 2) * (z + minDistance) * scaleFactor
