@@ -10,9 +10,6 @@ cv2.namedWindow('Trackbars')
 cv2.createTrackbar('hueLower', 'Trackbars',50,179,nothing)
 cv2.createTrackbar('hueUpper', 'Trackbars',100,179,nothing)
 
-cv2.createTrackbar('hue2Lower', 'Trackbars',50,179,nothing)
-cv2.createTrackbar('hue2Upper', 'Trackbars',100,179,nothing)
-
 cv2.createTrackbar('satLow', 'Trackbars',100,255,nothing)
 cv2.createTrackbar('satHigh', 'Trackbars',255,255,nothing)
 
@@ -39,9 +36,6 @@ while True:
     hueLow=cv2.getTrackbarPos('hueLower', 'Trackbars')
     hueUp=cv2.getTrackbarPos('hueUpper', 'Trackbars')
 
-    hue2Low=cv2.getTrackbarPos('hue2Lower', 'Trackbars')
-    hue2Up=cv2.getTrackbarPos('hue2Upper', 'Trackbars')
-
     Ls=cv2.getTrackbarPos('satLow', 'Trackbars')
     Us=cv2.getTrackbarPos('satHigh', 'Trackbars')
 
@@ -51,16 +45,10 @@ while True:
     l_b=np.array([hueLow,Ls,Lv])
     u_b=np.array([hueUp,Us,Uv])
 
-    l_b2=np.array([hue2Low,Ls,Lv])
-    u_b2=np.array([hue2Up,Us,Uv])
-
     FGmask=cv2.inRange(hsv,l_b,u_b)
-    FGmask2=cv2.inRange(hsv,l_b2,u_b2)
-    FGmaskComp=cv2.add(FGmask,FGmask2)
-    cv2.imshow('FGmaskComp',FGmaskComp)
+    cv2.imshow('FGmask',FGmask)
 
-    contours,_=cv2.findContours(FGmaskComp,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-    contours=sorted(contours,key=lambda x:cv2.contourArea(x),reverse=True)
+    contours =cv2.findContours(FGmask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         area=cv2.contourArea(cnt)
         (x,y,w,h)=cv2.boundingRect(cnt)

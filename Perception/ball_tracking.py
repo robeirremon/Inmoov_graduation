@@ -5,6 +5,21 @@ import numpy as np
 import cv2
 import math
 
+def nothing(x):
+    pass
+
+cv2.namedWindow('Trackbars')
+
+cv2.createTrackbar('hueLower', 'Trackbars',50,179,nothing)
+cv2.createTrackbar('hueUpper', 'Trackbars',100,179,nothing)
+
+cv2.createTrackbar('satLow', 'Trackbars',100,255,nothing)
+cv2.createTrackbar('satHigh', 'Trackbars',255,255,nothing)
+
+cv2.createTrackbar('valLow','Trackbars',100,255,nothing)
+cv2.createTrackbar('valHigh','Trackbars',255,255,nothing)
+
+
 def filter_color(rgb_image, lower_bound_color, upper_bound_color):
     #convert the image into the HSV color space
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
@@ -62,7 +77,7 @@ def draw_ball_contour(binary_image, rgb_image, contours, area_max):
             #print ("Area: {}, Perimeter: {}".format(area, perimeter))
     #print ("number of contours: {}".format(len(contours)))
     #cv2.imshow("RGB Image Contours",rgb_image)
-    #cv2.imshow("Black Image Contours",black_image)
+    cv2.imshow("Black Image Contours",black_image)
 
 def get_contour_center(contour):
     M = cv2.moments(contour)
@@ -93,6 +108,19 @@ def draw_positions (detected_frame, positions):
 
 def main():
     video_capture = cv2.VideoCapture(0)
+
+    hueLow=cv2.getTrackbarPos('hueLower', 'Trackbars')
+    hueUp=cv2.getTrackbarPos('hueUpper', 'Trackbars')
+
+    Ls=cv2.getTrackbarPos('satLow', 'Trackbars')
+    Us=cv2.getTrackbarPos('satHigh', 'Trackbars')
+
+    Lv=cv2.getTrackbarPos('valLow', 'Trackbars')
+    Uv=cv2.getTrackbarPos('valHigh', 'Trackbars')
+
+    l_b=np.array([hueLow,Ls,Lv])
+    u_b=np.array([hueUp,Us,Uv])
+
     #video_capture = cv2.VideoCapture('video/tennis-ball-video.mp4')
     old_center = [250,250]
     n = 0
