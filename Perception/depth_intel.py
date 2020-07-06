@@ -5,9 +5,19 @@ import numpy as np
 import cv2
 import math
 import time
-import freenect 
+import math
 import rospy
 from geometry_msgs.msg import Pose
+import pyrealsense2 as rs
+
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+
+# Start streaming
+pipeline.start(config)
 
 def detect():
     pub = rospy.Publisher('detection', Pose, queue_size=10)
@@ -16,15 +26,19 @@ def detect():
     start_time = 0
     end_time = 0
     while not rospy.is_shutdown():
-        frame = get_video()
-        print(type(frame))
+        # Wait for a coherent pair of frames: depth and color
+        frames = pipeline.wait_for_frames()
+        color_frame = frames.get_color_frame()
+        frame = np.asanyarray(color_frame.get_data())
         detection = False
         detection, detected_frame, new_center, end_time = detect_ball_in_a_frame(frame)
         elapsed_time = end_time - start_time
         cv2.imshow('Detection', detected_frame)
         x=new_center[0]
         y=new_center[1]
-        real_values = get_depth(y,x)
+
+        depth = frames.get_depth_frame()
+        real_values = get_depth(y,x,depth)
         all_values = old_real_values ,real_values
 
         if  (real_values[0] > 0) and (detection == True) and (real_values[0] < 250) and (old_real_values[0] - real_values[0] < 60):
@@ -49,34 +63,13 @@ def detect():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-
-#function to get RGB image from kinect
-def get_video():
-    array,_ = freenect.sync_get_video()
-    array = cv2.cvtColor(array,cv2.COLOR_RGB2BGR)
-    return array
-
 def distance3D(old_center, new_center):
     distance = math.sqrt((new_center[0] - old_center[0])**2 + (new_center[1] - old_center[1])**2 + (new_center[2] - old_center[2])**2)
     return distance
 
 #function to get depth image from kinect
-def get_depth(y,x):
-    array,_ = freenect.sync_get_depth()
-    #array = array.astype(np.uint8)
-
-    depth_value = array[y,x]
-    #distance_cm = 100/(-0.00307 * depth_value + 3.33)
-    distance_meter = 0.1236 * math.tan((depth_value / 2842.5) + 1.1863)         
-    w = 640
-    h = 480
-    #minDistance = -10
-    #scaleFactor = .0021
-    z = distance_meter * 100
-    #x = (x - w / 2) * (z + minDistance) * scaleFactor
-    #y = (y - h / 2) * (z + minDistance) * scaleFactor
-    x = (2 * math.tan(29 * 3.14159265359 / 180) * z) * ((x - w/2) / 640)
-    y = (2 * math.tan(22.5 * 3.14 / 180) * z) * ((y - h/2) / 480)
+def get_depth(y,x,depth):
+    z = depth.get_distance(x, y)
     real_values = [z,-x,-y]
     return real_values
      
