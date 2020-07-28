@@ -13,11 +13,11 @@ import pyrealsense2 as rs
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 90)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 60)
 
 # Start streaming
-pipeline.start(config)
+profile = pipeline.start(config)
 
 def detect():
     pub = rospy.Publisher('detection', Pose, queue_size=10)
@@ -36,9 +36,11 @@ def detect():
         cv2.imshow('Detection', detected_frame)
         x=new_center[0]
         y=new_center[1]
+        cv2.circle(frame, (x, y), 2, (255,0,0), thickness=2)
 
         depth = frames.get_depth_frame()
-        real_values = get_depth(y,x,depth)
+        
+        real_values = get_depth(y,x,depth, frame, frames)
         all_values = old_real_values ,real_values
 
         if  (real_values[0] > 0) and (detection == True) and (real_values[0] < 250) and (old_real_values[0] - real_values[0] < 60):
@@ -68,8 +70,33 @@ def distance3D(old_center, new_center):
     return distance
 
 #function to get depth image from kinect
-def get_depth(y,x,depth):
-    z = depth.get_distance(x, y)
+def get_depth(y,x,depth,frame,frames):
+    colorizer = rs.colorizer()
+    # Create alignment primitive with color as its target stream:
+    align = rs.align(rs.stream.color)
+    frames = align.process(frames)
+
+    # Update color and depth frames:
+    aligned_depth_frame = frames.get_depth_frame()
+    colorized_depth = np.asanyarray(colorizer.colorize(aligned_depth_frame).get_data())
+    height, width = frame.shape[:2]
+    expected = int(300)
+    aspect = int(width / height)
+    resized_image = cv2.resize(frame, (int(round(expected * aspect)), expected))
+    crop_start = int(round(expected * (aspect - 1) / 2))
+    crop_img = resized_image[0:expected, crop_start:crop_start+expected]
+    scale = height / expected
+    
+    depth = np.asanyarray(aligned_depth_frame.get_data())
+
+    cv2.circle(colorized_depth, (x, y), 2, (255,255,255), thickness=2)
+    cv2.imshow("depth", colorized_depth)
+
+    z = aligned_depth_frame.get_distance(x,y)
+    w = 640
+    h = 480
+    x = (2 * math.tan(29 * 3.14159265359 / 180) * z) * ((x - w/2) / 640)
+    y = (2 * math.tan(22.5 * 3.14 / 180) * z) * ((y - h/2) / 480)
     real_values = [z,-x,-y]
     return real_values
      
@@ -97,7 +124,7 @@ def findLargest(contours):
     area_max = 0
     for c in contours:
         area = cv2.contourArea(c)
-        if (area_max < area and area > 50):
+        if (area_max < area):
             area_max = area
     return area_max
 
@@ -113,15 +140,18 @@ def draw_ball_contour(binary_image, rgb_image, contours, area_max):
         max_val = area_max + tolerance
         if (area < max_val and area > min_val and area > 100):
             #perimeter= cv2.arcLength(c, True)
-            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            (x,y,w,h)=cv2.boundingRect(c)
+            # ((x, y), radius) = cv2.minEnclosingCircle(c)
             cv2.drawContours(rgb_image, [c], -1, (150,250,150), 1)
             cv2.drawContours(black_image, [c], -1, (150,250,150), 1)
             
-            cv2.circle(rgb_image, (cx, cy),(int)(radius),(0,0,255),3)
-            cv2.circle(black_image, (cx,cy),(int)(radius),(0,0,255),1)
-            cv2.circle(black_image, (cx,cy),5,(150,150,255),-1)
-            cv2.circle(rgb_image, (cx,cy),5,(150,150,255),-1)
-            
+            cv2.rectangle(rgb_image,(x,y),(x+w,y+h),(255,0,0),2)
+            # cv2.circle(rgb_image, (cx, cy),(int)(radius),(0,0,255),3)
+            # cv2.circle(black_image, (cx,cy),(int)(radius),(0,0,255),1)
+            # cv2.circle(black_image, (cx,cy),5,(150,150,255),-1)
+            # cv2.circle(rgb_image, (cx,cy),5,(150,150,255),-1)
+            # cx = int((x + w) / 2)
+            # cy = int((y + h) / 2)
             center = [cx, cy]
             detection = True
     return detection, rgb_image, center
@@ -141,9 +171,9 @@ def get_contour_center(contour):
     return cx, cy
 
 def detect_ball_in_a_frame(image_frame):
-    yellowLower =(25, 50, 50)
+    yellowLower =(29, 30, 107)
     #yellowLower =(50, 50, 50)
-    yellowUpper = (60, 255, 255)
+    yellowUpper = (89, 221, 255)
     #yellowUpper = (100, 255, 100)
     rgb_image = image_frame
     binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper)

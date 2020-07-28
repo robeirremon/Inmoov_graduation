@@ -9,14 +9,14 @@ y = [ 15.0   , 45.0  ]
 z = [ 85.0 , 115.0 ]
 
 pixelsPerMeter = 980.0
-FPS = 30.0
+FPS = 60.0
 
 # Euler's method will proceed by timeStepSize / timeStepPrecision at a time
 timeStepSize = 0.5 / FPS
 timeStepPrecision = 1.0
 
 # Number of Euler's method steps to take
-eulerSteps = 25
+eulerSteps = 100
 
 # Gravitational acceleration is in units of pixels per second squared
 gSeconds = 9.81 * pixelsPerMeter

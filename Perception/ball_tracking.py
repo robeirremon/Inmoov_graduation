@@ -4,6 +4,16 @@ from __future__ import division
 import numpy as np
 import cv2
 import math
+import pyrealsense2 as rs
+
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+
+# Start streaming
+pipeline.start(config)
 
 def nothing(x):
     pass
@@ -34,7 +44,7 @@ def getContours(binary_image):
     #_, contours, hierarchy = cv2.findContours(binary_image, 
     #                                          cv2.RETR_TREE, 
     #                                           cv2.CHAIN_APPROX_SIMPLE)
-    contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     return contours
 
@@ -96,7 +106,7 @@ def detect_ball_in_a_frame(image_frame):
     contours = getContours(binary_image_mask)
     area_max = findLargest(contours)
     detection, rgb_image, center = draw_ball_contour(binary_image_mask, rgb_image,contours, area_max)
-    return detection, rgb_image, center
+    return detection, binary_image_mask, center
 
 def draw_positions (detected_frame, positions):
     for position in positions:
@@ -107,7 +117,7 @@ def draw_positions (detected_frame, positions):
     return estimated_frame
 
 def main():
-    video_capture = cv2.VideoCapture(0)
+    # video_capture = cv2.VideoCapture(0)
 
     hueLow=cv2.getTrackbarPos('hueLower', 'Trackbars')
     hueUp=cv2.getTrackbarPos('hueUpper', 'Trackbars')
@@ -122,11 +132,11 @@ def main():
     u_b=np.array([hueUp,Us,Uv])
 
     #video_capture = cv2.VideoCapture('video/tennis-ball-video.mp4')
-    old_center = [250,250]
+    
     n = 0
     while(True):
-        ret, frame = video_capture.read()
-        print (old_center)
+        # ret, frame = video_capture.read()
+
         detection, detected_frame, new_center = detect_ball_in_a_frame(frame)
         cv2.imshow('Detection', detected_frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
