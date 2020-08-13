@@ -4,9 +4,9 @@ import rospy
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Point
 
-x = [ 10.0  , 40.0  ]
-y = [ 15.0   , 45.0  ]
-z = [ 85.0 , 115.0 ]
+x = [ 0.0  , 60.0  ]
+y = [ 0.0   , 60.0  ]
+z = [ 85.0 , 140.0 ]
 
 pixelsPerMeter = 980.0
 FPS = 60.0
@@ -16,15 +16,15 @@ timeStepSize = 0.5 / FPS
 timeStepPrecision = 1.0
 
 # Number of Euler's method steps to take
-eulerSteps = 100
+eulerSteps = 15
 
 # Gravitational acceleration is in units of pixels per second squared
 gSeconds = 9.81 * pixelsPerMeter
 # Per-timestep gravitational acceleration (pixels per timestep squared)
 gTimesteps = gSeconds * (timeStepSize**2)
 
-def estimateVelocity(old_pos, new_pos, t):
-    velocity = [(new_pos[0] - old_pos[0]) / t, (new_pos[1] - old_pos[1]) / t, (new_pos[2] - old_pos[2]) / t]
+def estimateVelocity(old_pos, new_pos):
+    velocity = [(new_pos[0] - old_pos[0]), (new_pos[1] - old_pos[1]), (new_pos[2] - old_pos[2])]
     return velocity
 
 def eulerExtrapolate(position, velocity, acceleration, timeDelta):
@@ -67,8 +67,8 @@ def callback(data):
     data.orientation.y += 0
     data.orientation.z += 115
 #4.03 , 0.3 , 138.53
-    velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z), data.orientation.w)
-    positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, 0, -980), data.orientation.w, eulerSteps)
+    velocity = estimateVelocity((data.position.x, data.position.y, data.position.z), (data.orientation.x, data.orientation.y, data.orientation.z))
+    positions = getTrajectory((data.orientation.x, data.orientation.y, data.orientation.z), velocity, (0, 0, -980), timeStepSize, eulerSteps)
     data_to_send = Point()  # the data to be sent, initialise the array
     #print (positions)
     

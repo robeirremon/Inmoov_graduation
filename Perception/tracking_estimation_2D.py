@@ -1,19 +1,30 @@
 #!/usr/bin/env python
 
 from __future__ import division
+import time
 import numpy as np
 import cv2
 import math
+import pyrealsense2 as rs
+
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 60)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 60)
+
+# Start streaming
+pipeline.start(config)
 
 pixelsPerMeter = 980.0
-FPS = 30.0
+FPS = 60.0
 
 # Euler's method will proceed by timeStepSize / timeStepPrecision at a time
-timeStepSize = 0.5 / FPS
+timeStepSize = 1 / FPS
 timeStepPrecision = 1.0
 
 # Number of Euler's method steps to take
-eulerSteps = 25
+eulerSteps = 50
 
 # Gravitational acceleration is in units of pixels per second squared
 gSeconds = 9.81 * pixelsPerMeter
@@ -62,7 +73,7 @@ def getContours(binary_image):
     #_, contours, hierarchy = cv2.findContours(binary_image, 
     #                                          cv2.RETR_TREE, 
     #                                           cv2.CHAIN_APPROX_SIMPLE)
-    contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, hierarchy = cv2.findContours(binary_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     return contours
 
@@ -78,6 +89,7 @@ def draw_ball_contour(binary_image, rgb_image, contours, area_max):
     black_image = np.zeros([binary_image.shape[0], binary_image.shape[1],3],'uint8')
     tolerance = 50
     center = [0,0]
+    detection = False
     for c in contours:
         cx, cy = get_contour_center(c)
         area = cv2.contourArea(c)
@@ -98,6 +110,8 @@ def draw_ball_contour(binary_image, rgb_image, contours, area_max):
             detection = True
         else:
             detection = False
+        if detection == True:
+            break
             
     return detection, rgb_image, center
         
@@ -116,8 +130,8 @@ def get_contour_center(contour):
     return cx, cy
 
 def detect_ball_in_a_frame(image_frame):
-    yellowLower =(25, 50, 50)
-    yellowUpper = (60, 255, 255)
+    yellowLower =(29, 30, 107)
+    yellowUpper = (89, 221, 255)
     rgb_image = image_frame
     binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper)
     contours = getContours(binary_image_mask)
@@ -134,23 +148,30 @@ def draw_positions (detected_frame, positions):
     return estimated_frame
 
 def main():
-    video_capture = cv2.VideoCapture(0)
+    #video_capture = cv2.VideoCapture(0)
     #video_capture = cv2.VideoCapture('video/tennis-ball-video.mp4')
     old_center = [250,250]
     n = 0
     while(True):
-        ret, frame = video_capture.read()
+        start = time.time()
+        #ret, frame = video_capture.read()
+        frames = pipeline.wait_for_frames()
+        color_frame = frames.get_color_frame()
+        frame = np.asanyarray(color_frame.get_data())
+        detection = False
         print (old_center)
         detection, detected_frame, new_center = detect_ball_in_a_frame(frame)
-        #cv2.imshow('Detection', detected_frame)
+        #cv2.imshow('Detection', detected_frame)detection = False
         ball_velocity = estimateVelocity(old_center, new_center)
-        if n != 0:
-            distance = distance2D(old_center, new_center)
-            if distance <= 50:
-                positions = getTrajectory(new_center, ball_velocity, (0, gTimesteps), timeStepSize, eulerSteps)
-                estimated_positions = draw_positions(detected_frame, positions)
+        if n > 10:
+            # distance = distance2D(old_center, new_center)
+            # if distance <= 50:
+            positions = getTrajectory(new_center, ball_velocity, (0, gTimesteps), timeStepSize, eulerSteps)
+            estimated_positions = draw_positions(detected_frame, positions)
             cv2.imshow('Estimation', estimated_positions)
             old_center = new_center
+            end = time.time()
+            print(end - start)
         else:
             old_center = new_center
             n += 1

@@ -43,7 +43,7 @@ def detect():
         real_values = get_depth(y,x,depth, frame, frames)
         all_values = old_real_values ,real_values
 
-        if  (real_values[0] > 0) and (detection == True) and (real_values[0] < 250) and (old_real_values[0] - real_values[0] < 60):
+        if  (real_values[0] > 0) and (detection == True) and (real_values[0] < 250):
             data_to_send = Pose()  # the data to be sent, initialise the array
             data_to_send.position.x = all_values[0][0]
             data_to_send.position.y = all_values[0][1]
@@ -97,7 +97,7 @@ def get_depth(y,x,depth,frame,frames):
     h = 480
     x = (2 * math.tan(29 * 3.14159265359 / 180) * z) * ((x - w/2) / 640)
     y = (2 * math.tan(22.5 * 3.14 / 180) * z) * ((y - h/2) / 480)
-    real_values = [z,-x,-y]
+    real_values = [z*100,-x*100,-y*100]
     return real_values
      
 
